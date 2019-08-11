@@ -16,4 +16,14 @@ Usage
 ```
 $ python3 herald.py
 $ ./herald.py
+$ ./herald.py --help
+usage: herald.py [-h] [--version] [--from FROM_TAG] [--to TO]
+
+Generates release notes for Submitty
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --version        show program's version number and exit
+  --from FROM_TAG  Set release tag to compare from. Defaults to last release.
+  --to TO          Set release to compare to. Defaults to HEAD of master.
 ```
