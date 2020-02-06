@@ -8,13 +8,14 @@ import sys
 import requests
 
 BASE_API_URL = "https://api.github.com/repos/Submitty/Submitty"
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 TYPE_REGEX = re.compile(r"^\[([ a-zA-Z0-9]+):*([ a-zA-Z0-9]*)\](.*)")
 
 
 def get_commit_details(message, commit_types):
     lines = message.splitlines()
     commit_message = lines[0].strip()
+    commit_category = None
     commit_type = 'Bugfix'
     commit_subtype = ''
     message = commit_message
@@ -25,21 +26,23 @@ def get_commit_details(message, commit_types):
         message = re_match.group(3).strip()
         if commit_subtype.lower() in ['testing', 'test', 'tests', 'vagrant']:
             commit_subtype = 'Testing'
-        if commit_type.lower() not in commit_types:
+        if commit_type.lower() in ['devdependency','dependencydev']:
+            if commit_type.lower() == 'dependencydev':
+                commit_type = 'DevDependency'
+            commit_category = 'dependency'
+        elif commit_type.lower() not in commit_types:
             commit_type = 'Bugfix' if commit_subtype == '' else commit_subtype
         elif commit_subtype.lower() == 'testing':
             commit_subtype = commit_type
             commit_type = 'Testing'
     except AttributeError:
         commit_type = "Bugfix"
-    if commit_type.lower() not in commit_types:
-        commit_type = 'Bugfix'
 
     final_message = f'[{commit_type}'
     if commit_subtype != '':
         final_message += f":{commit_subtype}"
     final_message += f"] {message}"
-    return final_message, commit_type.lower()
+    return final_message, commit_category if commit_category is not None else commit_type.lower()
 
 
 def main(args):
