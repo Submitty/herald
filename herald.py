@@ -24,6 +24,10 @@ def get_commit_details(message, commit_types):
         commit_type = re_match.group(1).replace(' ', '')
         commit_subtype = re_match.group(2).replace(' ', '')
         message = re_match.group(3).strip()
+        if commit_type.lower() in ['ui']:
+            commit_type = 'Feature'
+            if commit_subtype == '':
+                commit_subtype = 'UI'
         if commit_subtype.lower() in ['testing', 'test', 'tests', 'vagrant']:
             commit_subtype = 'Testing'
         if commit_type.lower() in ['devdependency','dependencydev']:
