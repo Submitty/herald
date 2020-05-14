@@ -1,0 +1,41 @@
+{
+  "name": "@submitty/herald",
+  "version": "1.0.0",
+  "description": "Release note generator",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "tsc-publish": "tsc-publish",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Submitty/herald.git"
+  },
+  "keywords": [
+    "changelog"
+  ],
+  "author": "Matthew Peveler <pevelm@rpi.edu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Submitty/herald/issues"
+  },
+  "homepage": "https://github.com/Submitty/herald#readme",
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "@typescript-eslint/eslint-plugin": "^2.32.0",
+    "@typescript-eslint/parser": "^2.32.0",
+    "codecov": "^3.6.5",
+    "eslint": "^6.8.0",
+    "jest": "^25.5.4",
+    "ts-jest": "^25.5.1",
+    "tsc-publish": "^0.5.2",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "@types/node-fetch": "^2.5.7",
+    "commander": "^5.1.0",
+    "node-fetch": "^2.6.0"
+  }
+}
