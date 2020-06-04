@@ -9,12 +9,16 @@ import requests
 
 BASE_API_URL = "https://api.github.com/repos/Submitty/Submitty"
 VERSION = '0.3.0'
-TYPE_REGEX = re.compile(r"^\[([ a-zA-Z0-9]+):*([ a-zA-Z0-9]*)\](.*)")
+TYPE_REGEX = re.compile(r"^\[([ /a-zA-Z0-9]+):*([ a-zA-Z0-9]*)\](.*)")
 
 
 def get_commit_details(message, commit_types):
     lines = message.splitlines()
     commit_message = lines[0].strip()
+
+    if "[SYSADMIN ACTION]" in commit_message:
+        return commit_message,"breaking"
+
     commit_category = None
     commit_type = 'Bugfix'
     commit_subtype = ''
@@ -24,7 +28,9 @@ def get_commit_details(message, commit_types):
         commit_type = re_match.group(1).replace(' ', '')
         commit_subtype = re_match.group(2).replace(' ', '')
         message = re_match.group(3).strip()
-        if commit_type.lower() in ['ui']:
+        if commit_type.lower() in ['vapt']:
+            commit_type = 'VPAT'
+        if commit_type.lower() in ['ui','ui/ux']:
             commit_type = 'Feature'
             if commit_subtype == '':
                 commit_subtype = 'UI'
@@ -84,7 +90,7 @@ def main(args):
             "commits": []
         },
         "breaking": {
-            "title": "BREAKING",
+            "title": "SYSADMIN ACTION / BREAKING CHANGE",
             "commits": []
         },
         "feature": {
