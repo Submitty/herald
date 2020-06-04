@@ -42,4 +42,11 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-.vscode
+# nodejs
+node_modules/
+dist/
+*.tsbuildinfo
+
+# ide ignores
+.idea/
+.vscode/

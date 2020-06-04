@@ -8,7 +8,7 @@ import sys
 import requests
 
 BASE_API_URL = "https://api.github.com/repos/Submitty/Submitty"
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 TYPE_REGEX = re.compile(r"^\[([ /a-zA-Z0-9]+):*([ a-zA-Z0-9]*)\](.*)")
 
 
