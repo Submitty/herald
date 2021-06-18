@@ -5,19 +5,21 @@ from argparse import ArgumentParser
 import re
 import sys
 
+from typing import Tuple
+
 import requests
 
-BASE_API_URL = "https://api.github.com/repos/Submitty/Submitty"
-VERSION = '0.3.1'
+BASE_API_URL = "https://api.github.com/repos/Submitty"
+VERSION = '0.4.0'
 TYPE_REGEX = re.compile(r"^\[([ /a-zA-Z0-9]+):*([ a-zA-Z0-9]*)\](.*)")
 
 
-def get_commit_details(message, commit_types):
+def get_commit_details(message: str, commit_types: list) -> Tuple[str, str]:
     lines = message.splitlines()
     commit_message = lines[0].strip()
 
     if "[SYSADMIN ACTION]" in commit_message:
-        return commit_message,"breaking"
+        return commit_message, "breaking"
 
     commit_category = None
     commit_type = 'Bugfix'
@@ -30,13 +32,13 @@ def get_commit_details(message, commit_types):
         message = re_match.group(3).strip()
         if commit_type.lower() in ['vapt']:
             commit_type = 'VPAT'
-        if commit_type.lower() in ['ui','ui/ux']:
+        if commit_type.lower() in ['ui', 'ui/ux']:
             commit_type = 'Feature'
             if commit_subtype == '':
                 commit_subtype = 'UI'
         if commit_subtype.lower() in ['testing', 'test', 'tests', 'vagrant']:
             commit_subtype = 'Testing'
-        if commit_type.lower() in ['devdependency','dependencydev']:
+        if commit_type.lower() in ['devdependency', 'dependencydev']:
             if commit_type.lower() == 'dependencydev':
                 commit_type = 'DevDependency'
             commit_category = 'dependency'
@@ -52,35 +54,43 @@ def get_commit_details(message, commit_types):
     if commit_subtype != '':
         final_message += f":{commit_subtype}"
     final_message += f"] {message}"
-    return final_message, commit_category if commit_category is not None else commit_type.lower()
+    category = commit_category if commit_category is not None else commit_type.lower()
+    return final_message, category
 
 
 def main(args):
     """Generate the release notes."""
-    req = requests.get(f"{BASE_API_URL}/releases/latest")
-    previous_release = req.json()
-
     parser = ArgumentParser(description="Generates release notes for Submitty")
     parser.add_argument('--version', action='version', version=f'%(prog)s {VERSION}')
     parser.add_argument(
         "--from",
         type=str,
         dest="from_tag",
-        default=previous_release['tag_name'],
         help="Set release tag to compare from. Defaults to last release."
     )
     parser.add_argument(
         "--to",
         type=str,
-        default="master",
+        dest="to_tag",
         help="Set release to compare to. Defaults to HEAD of master."
+    )
+
+    parser.add_argument(
+        'repo',
+        type=str,
+        nargs='?',
+        default='Submitty',
+        help='Repository to generate notes for'
     )
 
     args = parser.parse_args(args)
 
-    req = requests.get(
-        f"{BASE_API_URL}/compare/{args.from_tag}...{args.to}"
-    )
+    repo_url = f"{BASE_API_URL}/{args.repo}"
+    repo = requests.get(f"{repo_url}").json()
+    previous_release = requests.get(f"{repo_url}/releases/latest").json()
+    from_tag = args.from_tag if args.from_tag is not None else previous_release['tag_name']
+    to_tag = args.to_tag if args.to_tag is not None else repo['default_branch']
+    req = requests.get(f"{repo_url}/compare/{from_tag}...{to_tag}")
 
     commits = req.json()['commits']
 
