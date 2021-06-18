@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "herald"
+version = "0.4.0"
+description = ""
+authors = ["Matthew Peveler <matt.peveler@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+PyGithub = "^1.55"
+requests = "^2.25"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
