@@ -72,7 +72,7 @@ def main(args):
         "--to",
         type=str,
         dest="to_tag",
-        help="Set release to compare to. Defaults to HEAD of master."
+        help="Set release to compare to. Defaults to HEAD of main."
     )
 
     parser.add_argument(
@@ -146,6 +146,19 @@ def main(args):
     release_notes += f"*Previous Release Notes:* {previous_link}\n"
     release_notes += "\n"
     for release_type in release_commits:
+
+        # Don't include many of the categories in the release notes if
+        # there are no commits in that category.
+        if (len(release_commits[release_type]['commits']) == 0 and
+            (release_type == "security" or
+             release_type == "breaking" or
+             release_type == "vpat" or
+             release_type == "refactor" or
+             release_type == "dependency" or
+             release_type == "testing" or
+             release_type == "documentation")):
+            continue
+
         release_notes += f"{release_commits[release_type]['title']}\n\n"
         if len(release_commits[release_type]['commits']) == 0:
             release_notes += "*None*\n"
